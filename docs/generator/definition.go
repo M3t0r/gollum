@@ -162,7 +162,7 @@ func (list *DefinitionList) dumpString() string {
 }
 
 // getRST formats the DefinitionList as ReStructuredText
-func (list DefinitionList) getRST(paramFields bool, depth int) string {
+func (list DefinitionList) getRST(paramFields bool, depth int, inherited_from string) string {
 	result := ""
 
 	if len(list.desc) > 0 {
@@ -171,29 +171,26 @@ func (list DefinitionList) getRST(paramFields bool, depth int) string {
 
 	for _, def := range list.slice {
 		// Heading
-		if strings.Trim(def.name, " \t") != "" {
-			result += indentLines("**"+def.name+"**", 2*depth)
-
-		} else {
+		name := strings.TrimSpace(def.name)
+		if strings.Trim(def.name, " \t") == "" {
 			// Nameless definition
 			// FIXME: bullet lists or something
-			result += "** (unnamed) **"
+			name = "(unnamed)"
+		}
+		result += ".. gollum:option:: "+name+"\n"
+		if inherited_from != "" {
+			result += fmt.Sprintf("  :from: %s\n", inherited_from)
 		}
 
 		// Optional default value and unit
-		if paramFields && (def.unit != "" || def.dfl != "") {
+		if paramFields {
 			// TODO: cleaner formatting
-			result += " ("
 			if def.dfl != "" {
-				result += fmt.Sprintf("default: %s", def.dfl)
-			}
-			if def.dfl != "" && def.unit != "" {
-				result += ", "
+				result += fmt.Sprintf("  :default: %s\n", def.dfl)
 			}
 			if def.unit != "" {
-				result += fmt.Sprintf("unit: %s", def.unit)
+				result += fmt.Sprintf("  :unit: %s\n", def.unit)
 			}
-			result += ")"
 		}
 		result += "\n\n"
 
@@ -203,7 +200,7 @@ func (list DefinitionList) getRST(paramFields bool, depth int) string {
 		result += "\n\n"
 
 		// Children
-		result += def.children.getRST(paramFields, depth+1)
+		result += def.children.getRST(paramFields, depth+1, inherited_from)
 	}
 
 	//return indentLines(result, 2 * (depth + 1))
