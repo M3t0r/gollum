@@ -6,6 +6,7 @@
 
 # General stuff
 RST_GENERATOR_DIR=./generator
+RST_GENERATOR_SOURCES=$(wildcard $(RST_GENERATOR_DIR)/*.go)
 RST_GENERATOR=$(RST_GENERATOR_DIR)/rst_generator
 PRINTF=/usr/bin/printf
 
@@ -64,7 +65,7 @@ clean:
 $(BUILD_DIR):
 	mkdir $@
 
-$(RST_GENERATOR): $(BUILD_DIR)
+$(RST_GENERATOR): $(BUILD_DIR) $(RST_GENERATOR_SOURCES)
 	cd $(RST_GENERATOR_DIR) ; go build -o ../$(RST_GENERATOR)
 
 # Subtargets
