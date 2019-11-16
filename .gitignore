@@ -18,7 +18,8 @@ contrib/*
 contrib_*.go*
 
 # docs
-docs/_build.html
+docs/_build.*
+docs/src/gen
 docs/generator/rst_generator
 
 # files
